@@ -26,9 +26,12 @@ jobs:
 
     - name: Deploy to Server
       env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SFTP_HOST: ${{ secrets.SFTP_HOST }}
+        SFTP_USER: ${{ secrets.SFTP_USER }}
+        SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
       run: |
-        echo "$SSH_PRIVATE_KEY" > private_key.pem
-        chmod 600 private_key.pem
-        scp -i private_key.pem -r ./build user@your-server:/var/www/react-app
-        ssh -i private_key.pem user@your-server "sudo systemctl restart nginx"
+        apt-get update && apt-get install -y lftp
+        lftp -c "
+          open -u $SFTP_USER,$SFTP_PASSWORD sftp://$SFTP_HOST;
+          mirror -R ./build /var/www/react-app;
+        "
