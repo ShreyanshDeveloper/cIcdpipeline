@@ -41,7 +41,6 @@ jobs:
         # Log the SFTP details (excluding password)
         echo "SFTP Host: $SFTP_HOST"
         echo "SFTP User: $SFTP_USER"
-        echo "SFTP Password: $SFTP_PASSWORD"
         
         # Check if lftp is installed, install if necessary
         if ! command -v lftp &> /dev/null
@@ -52,11 +51,12 @@ jobs:
           echo "lftp is already installed."
         fi
 
-        # Use lftp to deploy the build folder
+        # Use lftp to deploy the build folder with bypass for host key verification
         echo "Starting deployment..."
         lftp -c "
+          set sftp:connect-program 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null';
           open -u $SFTP_USER,$SFTP_PASSWORD sftp://$SFTP_HOST;
-          mirror -R ./build /home/sidcohost4india/public_html/react/;
+          mirror -R ./build /home/$SFTP_USER/public_html/react/;
         "
 
         # Disable debugging
