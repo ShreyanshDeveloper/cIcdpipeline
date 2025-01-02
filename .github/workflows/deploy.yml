@@ -38,6 +38,11 @@ jobs:
         # Enable debugging to capture detailed logs
         set -x
 
+        # Log the SFTP details (excluding password)
+        echo "SFTP Host: $SFTP_HOST"
+        echo "SFTP User: $SFTP_USER"
+        echo "SFTP Password: $SFTP_PASSWORD"
+        
         # Check if lftp is installed, install if necessary
         if ! command -v lftp &> /dev/null
         then
