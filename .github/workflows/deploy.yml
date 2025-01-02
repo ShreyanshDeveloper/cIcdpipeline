@@ -35,6 +35,9 @@ jobs:
         SFTP_USER: ${{ secrets.SFTP_USER }}         # SFTP Username (Add as a repository secret)
         SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }} # SFTP Password (Add as a repository secret)
       run: |
+        # Enable debugging to capture detailed logs
+        set -x
+
         # Install lftp if not already installed
         echo "Installing lftp..."
         sudo apt-get update && sudo apt-get install -y lftp
@@ -45,4 +48,7 @@ jobs:
           open -u $SFTP_USER,$SFTP_PASSWORD sftp://$SFTP_HOST;
           mirror -R ./build /home/sidcohost4india/public_html/react/;
         "
+
+        # Disable debugging
+        set +x
         echo "Deployment completed successfully."
