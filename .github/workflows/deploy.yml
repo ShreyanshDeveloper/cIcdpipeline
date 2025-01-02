@@ -38,9 +38,14 @@ jobs:
         # Enable debugging to capture detailed logs
         set -x
 
-        # Install lftp if not already installed
-        echo "Installing lftp..."
-        sudo apt-get update && sudo apt-get install -y lftp
+        # Check if lftp is installed, install if necessary
+        if ! command -v lftp &> /dev/null
+        then
+          echo "lftp not found. Installing..."
+          sudo apt-get update && sudo apt-get install -y lftp
+        else
+          echo "lftp is already installed."
+        fi
 
         # Use lftp to deploy the build folder
         echo "Starting deployment..."
