@@ -3,35 +3,41 @@ name: React CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - main  # Run this workflow on pushes to the main branch
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+    # Step 1: Checkout Code
     - name: Checkout Code
       uses: actions/checkout@v3
 
+    # Step 2: Set Up Node.js
     - name: Set Up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'
+        node-version: '16' # Specify the Node.js version
 
+    # Step 3: Install Dependencies
     - name: Install Dependencies
       run: npm install
 
+    # Step 4: Build Project
     - name: Build Project
       run: npm run build
 
+    # Step 5: Deploy to Server
     - name: Deploy to Server
       env:
-        SFTP_HOST: ${{ secrets.SFTP_HOST }}
-        SFTP_USER: ${{ secrets.SFTP_USER }}
-        SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+        SFTP_HOST: ${{ secrets.SFTP_HOST }}         # SFTP Host (Add as a repository secret)
+        SFTP_USER: ${{ secrets.SFTP_USER }}         # SFTP Username (Add as a repository secret)
+        SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }} # SFTP Password (Add as a repository secret)
       run: |
-        apt-get update && apt-get install -y lftp
+        echo "Starting deployment..."
         lftp -c "
           open -u $SFTP_USER,$SFTP_PASSWORD sftp://$SFTP_HOST;
           mirror -R ./build /home/sidcohost4india/public_html/react/;
         "
+        echo "Deployment completed successfully."
