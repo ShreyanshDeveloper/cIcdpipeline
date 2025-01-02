@@ -35,6 +35,11 @@ jobs:
         SFTP_USER: ${{ secrets.SFTP_USER }}         # SFTP Username (Add as a repository secret)
         SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }} # SFTP Password (Add as a repository secret)
       run: |
+        # Install lftp if not already installed
+        echo "Installing lftp..."
+        sudo apt-get update && sudo apt-get install -y lftp
+
+        # Use lftp to deploy the build folder
         echo "Starting deployment..."
         lftp -c "
           open -u $SFTP_USER,$SFTP_PASSWORD sftp://$SFTP_HOST;
